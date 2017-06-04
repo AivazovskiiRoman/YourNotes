@@ -1,0 +1,10 @@
+extends layout
+
+block content
+    h1= note.title
+    h5 Written by #{note.author}
+    p= note.body
+    hr
+    .btn-group
+        a.btn.btn-default(href='/notes/edit/'+note._id) Edit
+        a.btn.btn-danger.delete-note(href='#', data-id=note._id) Delete

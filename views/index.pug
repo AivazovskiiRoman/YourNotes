@@ -1,0 +1,8 @@
+extends layout
+
+block content
+    h1 #{title}
+    ul.list-group
+      each note, i in notes
+        li.list-group-item
+          a(href="/notes/"+note._id)= note.title
