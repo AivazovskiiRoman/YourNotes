@@ -38,7 +38,8 @@ mongo
 admin   0.000GB
 local   0.000GB
 ```
-**Create new db - notedb**
+###### Create new db - notedb
+
 5. Next command:
 ```
 > use notedb
@@ -50,7 +51,7 @@ switched to db notedb
 { "ok" : 1 }
 ```
 
-**Show data in notedb**
+###### Show data in notedb
 ```
 > show dbs
 admin   0.000GB
