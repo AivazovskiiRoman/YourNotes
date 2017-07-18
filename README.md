@@ -16,21 +16,37 @@ The project contents full CRUD functionality, notifications and validation.
 
 ###### MongoDB:
 
-1. Open 'cmd' go to 'C:\...\mongodb\bin'
-2. (Set path for db, e.g.): mongod --dbpath "C:\Users\...\mongodb\data"
-3. Open new 'cmd' go to 'C:\...\mongodb\bin' and write: mongo
-4. Show all db in folder data: show dbs
+1. Open 'cmd' go to 
 ```
+C:\...\mongodb\bin
+```
+2. Set path for db, e.g.:
+```
+mongod --dbpath "C:\Users\...\mongodb\data"
+```
+3. Open new 'cmd' go to
+```
+'C:\...\mongodb\bin'
+```
+and write: 
+```
+mongo
+```
+4. Show all db in folder data:
+```
+> show dbs
 admin   0.000GB
 local   0.000GB
 ```
 **Create new db - notedb**
-5. Next command: use notedb
+5. Next command:
 ```
+> use notedb
 switched to db notedb
 ```
-6. Next command: db.createCollection('notes');
+6. Next command:
 ```
+> db.createCollection('notes');
 { "ok" : 1 }
 ```
 
@@ -59,7 +75,7 @@ switched to db notedb
 }
 {
         "_id" : ObjectId("592cdb33dd9b690094598498"),
-        "title" : "The three note",
+        "title" : "The third note",
         "author" : "Roman",
         "body" : "this is note three"
 }

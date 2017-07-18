@@ -18,8 +18,9 @@ html
                     ul.nav.navbar-nav
                         li.active
                             a(href='/') Home
-                        li
-                            a(href='/notes/add') Add note
+                        if user
+                            li
+                                a(href='/notes/add') Add note
                     ul.nav.navbar-nav.navbar-right
                         if user
                             li 

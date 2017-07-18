@@ -1,20 +1,22 @@
 const express = require('express');
 const router = express.Router();
 
-// Bring in note model
+// Note model
 let Note = require('../models/note');
 
+// User model
+let User = require('../models/user');
+
 // Add route
-router.get('/add', function(req, res){
+router.get('/add', isAuthenticated, function (req, res) {
     res.render('add_note', {
         title: 'Add new note'
     });
 });
 
 // Add submit POST route 
-router.post('/add', function(req, res){
+router.post('/add', function (req, res) {
     req.checkBody('title', 'Title is required').notEmpty();
-    req.checkBody('author', 'Author is required').notEmpty();
     req.checkBody('body', 'Body is required').notEmpty();
 
     // Get error
@@ -28,11 +30,11 @@ router.post('/add', function(req, res){
     } else {
         let note = new Note();
         note.title = req.body.title;
-        note.author = req.body.author;
+        note.author = req.user._id;
         note.body = req.body.body;
 
-        note.save(function(err){
-            if (err){
+        note.save(function (err) {
+            if (err) {
                 console.log(err);
                 return;
             } else {
@@ -44,8 +46,12 @@ router.post('/add', function(req, res){
 });
 
 // Load edit form
-router.get('/edit/:id', function(req, res){
-    Note.findById(req.params.id, function(err, note){
+router.get('/edit/:id', isAuthenticated, function (req, res) {
+    Note.findById(req.params.id, function (err, note) {
+        if (note.author != req.user._id) {
+            req.flash('danger', 'Not Autorized');
+            res.redirect('/');
+        }
         res.render('edit_note', {
             title: 'Edit note',
             note: note
@@ -54,16 +60,16 @@ router.get('/edit/:id', function(req, res){
 });
 
 // Update submit POST route 
-router.post('/edit/:id', function(req, res){
+router.post('/edit/:id', function (req, res) {
     let note = {};
     note.title = req.body.title;
-    note.author = req.body.author;
+    note.author = req.user._id;
     note.body = req.body.body;
 
-    let query = {_id:req.params.id};
+    let query = { _id: req.params.id };
 
-    Note.update(query, note, function(err){
-        if (err){
+    Note.update(query, note, function (err) {
+        if (err) {
             console.log(err);
             return;
         } else {
@@ -74,25 +80,49 @@ router.post('/edit/:id', function(req, res){
 });
 
 // Delete note 
-router.delete('/:id', function(req, res){
-    let query = {_id:req.params.id};
+router.delete('/:id', function (req, res) {
 
-    Note.remove(query, function(err){
-        if (err) {
-            console.log(err);
+    if (!req.user._id) {
+        res.status(500).send();
+    }
+
+    let query = { _id: req.params.id };
+
+    Note.findById(req.params.id, function (err, note) {
+        if (note.author != req.user._id) {
+            res.status(500).send();
+        } else {
+            Note.remove(query, function (err) {
+                if (err) {
+                    console.log(err);
+                }
+                req.flash('success', 'The note deleted');
+                res.send('Success!');
+            });
         }
-        req.flash('success', 'The note deleted');
-        res.send('Success!');
     });
 });
 
-// Add single note
-router.get('/:id', function(req, res){
-    Note.findById(req.params.id, function(err, note){
-        res.render('note', {
-            note: note
+// Get single note
+router.get('/:id', function (req, res) {
+    Note.findById(req.params.id, function (err, note) {
+        User.findById(note.author, function (err, user) {
+            res.render('note', {
+                note: note,
+                author: user.name
+            });
         });
     });
 });
+
+// Access control
+function isAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    } else {
+        req.flash('danger', 'Please login');
+        res.redirect('/users/login');
+    }
+};
 
 module.exports = router;
